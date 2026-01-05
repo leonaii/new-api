@@ -1,0 +1,37 @@
+# New-API Docker Compose 部署配置模板
+# 此文件由 go.sh 脚本使用，请勿直接修改
+# 实际部署配置保存在 ~/.new-api-deploy/docker-compose.yml
+
+services:
+  new-api:
+    image: new-api:local
+    container_name: new-api
+    restart: always
+    network_mode: host
+    command: --log-dir /app/logs
+    volumes:
+      - ${DATA_DIR:-./data}/data:/data
+      - ${DATA_DIR:-./data}/logs:/app/logs
+    environment:
+      - SQL_DSN=${SQL_DSN}
+      - REDIS_CONN_STRING=${REDIS_CONN_STRING:-}
+      - TZ=${TZ:-Asia/Shanghai}
+      - SESSION_SECRET=${SESSION_SECRET:-}
+      - SYNC_FREQUENCY=${SYNC_FREQUENCY:-}
+      - BATCH_UPDATE_ENABLED=${BATCH_UPDATE_ENABLED:-true}
+      - STREAMING_TIMEOUT=${STREAMING_TIMEOUT:-360}
+      - ERROR_LOG_ENABLED=${ERROR_LOG_ENABLED:-true}
+      - MEMORY_CACHE_ENABLED=${MEMORY_CACHE_ENABLED:-}
+      - RELAY_TIMEOUT=${RELAY_TIMEOUT:-}
+      - GEMINI_VISION_MAX_IMAGE_NUM=${GEMINI_VISION_MAX_IMAGE_NUM:-}
+      - COHERE_SAFETY_SETTING=${COHERE_SAFETY_SETTING:-}
+      - GET_MEDIA_TOKEN=${GET_MEDIA_TOKEN:-}
+      - GET_MEDIA_TOKEN_NOT_STREAM=${GET_MEDIA_TOKEN_NOT_STREAM:-}
+      - DIFY_DEBUG=${DIFY_DEBUG:-}
+      - NODE_TYPE=${NODE_TYPE:-}
+      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL:-}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:3000/api/status | grep -o '\"success\":.*true' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
