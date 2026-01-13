@@ -146,18 +146,24 @@ func GetChannel(group string, model string, retry int) (*Channel, error) {
 func (channel *Channel) AddAbilities(tx *gorm.DB) error {
 	models_ := strings.Split(channel.Models, ",")
 	groups_ := strings.Split(channel.Group, ",")
+	modelPrefix := channel.GetModelPrefix()
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
+		// 如果设置了模型前缀，则拼接前缀
+		modelWithPrefix := model
+		if modelPrefix != "" {
+			modelWithPrefix = modelPrefix + model
+		}
 		for _, group := range groups_ {
-			key := group + "|" + model
+			key := group + "|" + modelWithPrefix
 			if _, exists := abilitySet[key]; exists {
 				continue
 			}
 			abilitySet[key] = struct{}{}
 			ability := Ability{
 				Group:     group,
-				Model:     model,
+				Model:     modelWithPrefix,
 				ChannelId: channel.Id,
 				Enabled:   channel.Status == common.ChannelStatusEnabled,
 				Priority:  channel.Priority,
@@ -218,18 +224,24 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 	// Then add new abilities
 	models_ := strings.Split(channel.Models, ",")
 	groups_ := strings.Split(channel.Group, ",")
+	modelPrefix := channel.GetModelPrefix()
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
+		// 如果设置了模型前缀，则拼接前缀
+		modelWithPrefix := model
+		if modelPrefix != "" {
+			modelWithPrefix = modelPrefix + model
+		}
 		for _, group := range groups_ {
-			key := group + "|" + model
+			key := group + "|" + modelWithPrefix
 			if _, exists := abilitySet[key]; exists {
 				continue
 			}
 			abilitySet[key] = struct{}{}
 			ability := Ability{
 				Group:     group,
-				Model:     model,
+				Model:     modelWithPrefix,
 				ChannelId: channel.Id,
 				Enabled:   channel.Status == common.ChannelStatusEnabled,
 				Priority:  channel.Priority,

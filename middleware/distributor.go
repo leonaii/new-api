@@ -323,6 +323,23 @@ func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, mode
 	common.SetContextKey(c, constant.ContextKeyChannelModelMapping, channel.GetModelMapping())
 	common.SetContextKey(c, constant.ContextKeyChannelStatusCodeMapping, channel.GetStatusCodeMapping())
 
+	// 处理模型前缀：如果渠道设置了前缀，需要从请求的模型名中移除前缀得到上游模型名
+	modelPrefix := channel.GetModelPrefix()
+	if modelPrefix != "" {
+		common.SetContextKey(c, constant.ContextKeyChannelModelPrefix, modelPrefix)
+		// 如果模型名以该前缀开头，则移除前缀得到上游模型名
+		if strings.HasPrefix(modelName, modelPrefix) {
+			upstreamModelName := strings.TrimPrefix(modelName, modelPrefix)
+			common.SetContextKey(c, constant.ContextKeyUpstreamModelName, upstreamModelName)
+		} else {
+			// 如果模型名不以前缀开头，则上游模型名与请求模型名相同
+			common.SetContextKey(c, constant.ContextKeyUpstreamModelName, modelName)
+		}
+	} else {
+		// 没有设置前缀，上游模型名与请求模型名相同
+		common.SetContextKey(c, constant.ContextKeyUpstreamModelName, modelName)
+	}
+
 	key, index, newAPIError := channel.GetNextEnabledKey()
 	if newAPIError != nil {
 		return newAPIError

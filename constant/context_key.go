@@ -37,6 +37,8 @@ const (
 	ContextKeyChannelIsMultiKey        ContextKey = "channel_is_multi_key"
 	ContextKeyChannelMultiKeyIndex     ContextKey = "channel_multi_key_index"
 	ContextKeyChannelKey               ContextKey = "channel_key"
+	ContextKeyChannelModelPrefix       ContextKey = "channel_model_prefix"  // 渠道模型前缀
+	ContextKeyUpstreamModelName        ContextKey = "upstream_model_name"   // 上游模型名（去除前缀后）
 
 	ContextKeyAutoGroup           ContextKey = "auto_group"
 	ContextKeyAutoGroupIndex      ContextKey = "auto_group_index"

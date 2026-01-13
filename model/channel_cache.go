@@ -43,13 +43,19 @@ func InitChannelCache() {
 			continue // skip disabled channels
 		}
 		groups := strings.Split(channel.Group, ",")
+		modelPrefix := channel.GetModelPrefix()
 		for _, group := range groups {
 			models := strings.Split(channel.Models, ",")
 			for _, model := range models {
-				if _, ok := newGroup2model2channels[group][model]; !ok {
-					newGroup2model2channels[group][model] = make([]int, 0)
+				// 如果设置了模型前缀，则使用带前缀的模型名作为key
+				modelKey := model
+				if modelPrefix != "" {
+					modelKey = modelPrefix + model
 				}
-				newGroup2model2channels[group][model] = append(newGroup2model2channels[group][model], channel.Id)
+				if _, ok := newGroup2model2channels[group][modelKey]; !ok {
+					newGroup2model2channels[group][modelKey] = make([]int, 0)
+				}
+				newGroup2model2channels[group][modelKey] = append(newGroup2model2channels[group][modelKey], channel.Id)
 			}
 		}
 	}

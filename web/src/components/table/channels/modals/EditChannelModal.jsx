@@ -137,6 +137,7 @@ const EditChannelModal = (props) => {
     base_url: '',
     other: '',
     model_mapping: '',
+    model_prefix: '',
     status_code_mapping: '',
     models: [],
     auto_ban: 1,
@@ -2652,6 +2653,19 @@ const EditChannelModal = (props) => {
                       formApi={formApiRef.current}
                       extraText={t(
                         '键为请求中的模型名称，值为要替换的模型名称',
+                      )}
+                    />
+
+                    <Form.Input
+                      field='model_prefix'
+                      label={t('模型前缀')}
+                      placeholder={t('例如: openai/ 或 my-prefix-')}
+                      onChange={(value) =>
+                        handleInputChange('model_prefix', value)
+                      }
+                      showClear
+                      extraText={t(
+                        '设置后，该渠道的所有模型名称将自动添加此前缀，用于区分不同渠道的同名模型',
                       )}
                     />
                   </Card>

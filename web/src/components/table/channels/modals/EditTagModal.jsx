@@ -68,6 +68,7 @@ const EditTagModal = (props) => {
     tag: '',
     new_tag: null,
     model_mapping: null,
+    model_prefix: null,
     groups: [],
     models: [],
     param_override: null,
@@ -187,6 +188,9 @@ const EditTagModal = (props) => {
       }
       data.model_mapping = formVals.model_mapping;
     }
+    if (formVals.model_prefix !== undefined && formVals.model_prefix !== null) {
+      data.model_prefix = formVals.model_prefix;
+    }
     if (formVals.groups && formVals.groups.length > 0) {
       data.groups = formVals.groups.join(',');
     }
@@ -230,6 +234,7 @@ const EditTagModal = (props) => {
     data.new_tag = formVals.new_tag;
     if (
       data.model_mapping === undefined &&
+      data.model_prefix === undefined &&
       data.groups === undefined &&
       data.models === undefined &&
       data.new_tag === undefined &&
@@ -521,6 +526,35 @@ const EditTagModal = (props) => {
                         <Text
                           className='!text-semi-color-primary cursor-pointer'
                           onClick={() => handleInputChange('model_mapping', '')}
+                        >
+                          {t('不更改')}
+                        </Text>
+                      </Space>
+                    }
+                  />
+
+                  <Form.Input
+                    field='model_prefix'
+                    label={t('模型前缀')}
+                    placeholder={t('请输入模型前缀，留空则不更改')}
+                    onChange={(value) =>
+                      handleInputChange('model_prefix', value)
+                    }
+                    showClear
+                    extraText={
+                      <Space>
+                        <Text type='tertiary' size='small'>
+                          {t('设置后将批量更新该标签下所有渠道的模型前缀')}
+                        </Text>
+                        <Text
+                          className='!text-semi-color-primary cursor-pointer'
+                          onClick={() => handleInputChange('model_prefix', '')}
+                        >
+                          {t('清空前缀')}
+                        </Text>
+                        <Text
+                          className='!text-semi-color-primary cursor-pointer'
+                          onClick={() => handleInputChange('model_prefix', null)}
                         >
                           {t('不更改')}
                         </Text>

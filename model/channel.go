@@ -44,6 +44,7 @@ type Channel struct {
 	AutoBan           *int    `json:"auto_ban" gorm:"default:1"`
 	OtherInfo         string  `json:"other_info"`
 	Tag               *string `json:"tag" gorm:"index"`
+	ModelPrefix       *string `json:"model_prefix" gorm:"type:varchar(64);comment:模型前缀"` // 模型前缀，用于在abilities表中为模型名添加前缀
 	Setting           *string `json:"setting" gorm:"type:text"` // 渠道额外设置
 	ParamOverride     *string `json:"param_override" gorm:"type:text"`
 	HeaderOverride    *string `json:"header_override" gorm:"type:text"`
@@ -236,6 +237,15 @@ func (channel *Channel) GetTag() string {
 		return ""
 	}
 	return *channel.Tag
+}
+
+// GetModelPrefix 获取模型前缀
+// 返回空字符串表示未设置前缀
+func (channel *Channel) GetModelPrefix() string {
+	if channel.ModelPrefix == nil {
+		return ""
+	}
+	return *channel.ModelPrefix
 }
 
 func (channel *Channel) SetTag(tag string) {
@@ -697,7 +707,7 @@ func DisableChannelByTag(tag string) error {
 	return err
 }
 
-func EditChannelByTag(tag string, newTag *string, modelMapping *string, models *string, group *string, priority *int64, weight *uint, paramOverride *string, headerOverride *string) error {
+func EditChannelByTag(tag string, newTag *string, modelMapping *string, models *string, group *string, priority *int64, weight *uint, paramOverride *string, headerOverride *string, modelPrefix *string) error {
 	updateData := Channel{}
 	shouldReCreateAbilities := false
 	updatedTag := tag
@@ -728,6 +738,10 @@ func EditChannelByTag(tag string, newTag *string, modelMapping *string, models *
 	}
 	if headerOverride != nil {
 		updateData.HeaderOverride = headerOverride
+	}
+	if modelPrefix != nil {
+		updateData.ModelPrefix = modelPrefix
+		shouldReCreateAbilities = true // 前缀变更需要重建 abilities
 	}
 
 	err := DB.Model(&Channel{}).Where("tag = ?", tag).Updates(updateData).Error
