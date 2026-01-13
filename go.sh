@@ -422,6 +422,9 @@ update_code() {
     else
         log_info "代码已更新: $old_commit -> $new_commit"
     fi
+    
+    # 恢复脚本可执行权限（git reset --hard 可能会重置权限）
+    chmod +x "$SCRIPT_DIR/go.sh"
 }
 
 # ==================== Docker 操作 ====================
