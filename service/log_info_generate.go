@@ -50,6 +50,13 @@ func GenerateTextOtherInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, m
 		other["upstream_model_name"] = relayInfo.UpstreamModelName
 	}
 
+	// 记录模型前缀信息：当上游模型名与原始模型名不同时，记录实际发送给上游的模型名
+	modelPrefix := common.GetContextKeyString(ctx, constant.ContextKeyChannelModelPrefix)
+	if modelPrefix != "" && relayInfo.UpstreamModelName != relayInfo.OriginModelName {
+		other["model_prefix"] = modelPrefix
+		other["upstream_model_name"] = relayInfo.UpstreamModelName
+	}
+
 	isSystemPromptOverwritten := common.GetContextKeyBool(ctx, constant.ContextKeySystemPromptOverride)
 	if isSystemPromptOverwritten {
 		other["is_system_prompt_overwritten"] = true
