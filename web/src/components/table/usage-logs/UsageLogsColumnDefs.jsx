@@ -174,11 +174,13 @@ function renderFirstUseTime(type, t) {
 
 function renderModelName(record, copyText, t) {
   let other = getLogOther(record.other);
-  let modelMapped =
-    other?.is_model_mapped &&
+  // 检查是否有模型映射或模型前缀，两种情况都需要显示上游模型名
+  let hasUpstreamModel =
+    (other?.is_model_mapped || other?.model_prefix) &&
     other?.upstream_model_name &&
-    other?.upstream_model_name !== '';
-  if (!modelMapped) {
+    other?.upstream_model_name !== '' &&
+    other?.upstream_model_name !== record.model_name;
+  if (!hasUpstreamModel) {
     return renderModelTag(record.model_name, {
       onClick: (event) => {
         copyText(event, record.model_name).then((r) => {});

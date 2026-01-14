@@ -389,11 +389,13 @@ export const useLogsData = () => {
         }
       }
       if (logs[i].type === 2) {
-        let modelMapped =
-          other?.is_model_mapped &&
+        // 检查是否有模型映射或模型前缀，两种情况都需要显示上游模型名
+        let hasUpstreamModel =
+          (other?.is_model_mapped || other?.model_prefix) &&
           other?.upstream_model_name &&
-          other?.upstream_model_name !== '';
-        if (modelMapped) {
+          other?.upstream_model_name !== '' &&
+          other?.upstream_model_name !== logs[i].model_name;
+        if (hasUpstreamModel) {
           expandDataLocal.push({
             key: t('请求并计费模型'),
             value: logs[i].model_name,
