@@ -25,7 +25,7 @@ import ModelDetailSideSheet from '../modal/ModelDetailSideSheet';
 import { useModelPricingData } from '../../../../hooks/model-pricing/useModelPricingData';
 import { useIsMobile } from '../../../../hooks/common/useIsMobile';
 
-const PricingPage = () => {
+const PricingPage = ({ hideRates = false, pageTitle = '模型广场' }) => {
   const pricingData = useModelPricingData();
   const { Sider, Content } = Layout;
   const isMobile = useIsMobile();
@@ -37,6 +37,8 @@ const PricingPage = () => {
     setShowRatio,
     viewMode,
     setViewMode,
+    hideRates,
+    pageTitle,
   };
 
   return (
