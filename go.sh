@@ -241,7 +241,23 @@ interactive_config() {
     # 前端URL
     local current_frontend=$(read_config_value "FRONTEND_BASE_URL" "")
     prompt_input "前端基础URL (留空使用默认)" "$current_frontend" FRONTEND_BASE_URL
-    
+
+    echo ""
+    echo -e "${CYAN}==================== 速率限制配置 (可选) ====================${NC}"
+    echo -e "${YELLOW}提示: 留空使用默认值，设置为0可禁用对应限制${NC}"
+
+    # 全局 API 速率限制
+    local current_api_rate_limit=$(read_config_value "GLOBAL_API_RATE_LIMIT" "1800")
+    prompt_input "全局API速率限制 (默认1800次/180秒)" "$current_api_rate_limit" GLOBAL_API_RATE_LIMIT
+
+    # 全局 Web 速率限制
+    local current_web_rate_limit=$(read_config_value "GLOBAL_WEB_RATE_LIMIT" "600")
+    prompt_input "全局Web速率限制 (默认600次/180秒)" "$current_web_rate_limit" GLOBAL_WEB_RATE_LIMIT
+
+    # 关键操作速率限制
+    local current_critical_rate_limit=$(read_config_value "CRITICAL_RATE_LIMIT" "200")
+    prompt_input "关键操作速率限制 (默认200次/20分钟)" "$current_critical_rate_limit" CRITICAL_RATE_LIMIT
+
     # 保存配置
     save_config
     generate_compose_file
@@ -301,6 +317,11 @@ EOF
         echo "DIFY_DEBUG='$DIFY_DEBUG'"
         echo "NODE_TYPE='$NODE_TYPE'"
         echo "FRONTEND_BASE_URL='$FRONTEND_BASE_URL'"
+        echo ""
+        echo "# 速率限制配置"
+        echo "GLOBAL_API_RATE_LIMIT='$GLOBAL_API_RATE_LIMIT'"
+        echo "GLOBAL_WEB_RATE_LIMIT='$GLOBAL_WEB_RATE_LIMIT'"
+        echo "CRITICAL_RATE_LIMIT='$CRITICAL_RATE_LIMIT'"
         echo ""
         echo "# 项目路径（用于更新代码）"
         echo "PROJECT_DIR='$SCRIPT_DIR'"
@@ -365,7 +386,10 @@ generate_compose_file() {
     add_env "DIFY_DEBUG" "$DIFY_DEBUG"
     add_env "NODE_TYPE" "$NODE_TYPE"
     add_env "FRONTEND_BASE_URL" "$FRONTEND_BASE_URL"
-    
+    add_env "GLOBAL_API_RATE_LIMIT" "$GLOBAL_API_RATE_LIMIT"
+    add_env "GLOBAL_WEB_RATE_LIMIT" "$GLOBAL_WEB_RATE_LIMIT"
+    add_env "CRITICAL_RATE_LIMIT" "$CRITICAL_RATE_LIMIT"
+
     cat > "$COMPOSE_FILE" << EOF
 # New-API Docker Compose 部署配置
 # 自动生成，请勿手动修改
