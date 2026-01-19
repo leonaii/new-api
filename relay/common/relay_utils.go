@@ -201,6 +201,27 @@ func isKnownTaskField(field string) bool {
 	return knownFields[field]
 }
 
+// ReplaceModelInPassThroughBody 在透传请求体中替换 model 字段为上游模型名
+// 当渠道设置了模型前缀时，需要将请求体中的 model 字段替换为去掉前缀后的上游模型名
+func ReplaceModelInPassThroughBody(body []byte, upstreamModelName string) ([]byte, error) {
+	if upstreamModelName == "" {
+		return body, nil
+	}
+
+	var data map[string]interface{}
+	if err := common.Unmarshal(body, &data); err != nil {
+		return body, err
+	}
+
+	// 只有当 model 字段存在时才替换
+	if _, exists := data["model"]; exists {
+		data["model"] = upstreamModelName
+		return common.Marshal(data)
+	}
+
+	return body, nil
+}
+
 func ValidateBasicTaskRequest(c *gin.Context, info *RelayInfo, action string) *dto.TaskError {
 	var err error
 	contentType := c.GetHeader("Content-Type")
